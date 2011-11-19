@@ -14,28 +14,32 @@ import static org.junit.Assert.assertTrue;
  */
 public class ClassPathHelper {
     public static String classPath() {
+        return classPath(".");
+    }
+
+    public static String classPath(String path) {
         StringBuilder cp = new StringBuilder();
 
-        cp.append(classPathDir("test/classes"));
-        cp.append(classPathDir("../test-resources"));
-        cp.append(classPathDir("classes"));
-        cp.append(classPathDir("../resources"));
-        cp.append(classPathJarDir("../lib/runtime"));
-        cp.append(classPathJarDir("../lib/compile"));
-        cp.append(classPathJarDir("../lib/test"));
+        cp.append(classPathDir(new File(path), "build/test/classes"));
+        cp.append(classPathDir(new File(path), "test-resources"));
+        cp.append(classPathDir(new File(path), "build/classes"));
+        cp.append(classPathDir(new File(path), "resources"));
+        cp.append(classPathJarDir(new File(path), "lib/runtime"));
+        cp.append(classPathJarDir(new File(path), "lib/compile"));
+        cp.append(classPathJarDir(new File(path), "lib/test"));
 
         return cp.toString().replaceAll(Pattern.quote(File.pathSeparator) + "$", "");
     }
 
-    public static String classPathDir(String dir) {
-        File dirFile = new File(dir);
+    public static String classPathDir(File basedir, String path) {
+        File dirFile = new File(basedir, path);
         if (dirFile.exists())
             return dirFile.getAbsolutePath() + File.pathSeparator;
         return "";
     }
 
-    public static StringBuilder classPathJarDir(String jarDir) {
-        final File jarDirFile = new File(jarDir);
+    public static StringBuilder classPathJarDir(File basedir, String path) {
+        final File jarDirFile = new File(basedir, path);
         StringBuilder dirClassPath = new StringBuilder();
         if (jarDirFile.exists()) {
             File[] jarList = jarDirFile.listFiles(new FilenameFilter() {
